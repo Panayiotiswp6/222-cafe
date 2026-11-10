@@ -14,3 +14,15 @@ Cormorant Garamond is variable normal weight 500–700 and italic 500–600. DM 
 - `gfs-didot-normal-greek.woff2`: https://fonts.gstatic.com/s/gfsdidot/v18/Jqzh5TybZ9vZMWFssvwSE-3HJSA.woff2
 
 All families are distributed under SIL Open Font License 1.1; see the included family license files.
+
+## Roboto Condensed
+
+Google Fonts variable normal weight 600–900, Greek Extended, Greek and Latin subsets; downloaded 10 November 2026.
+
+CSS source: https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@600..900&display=swap
+
+- `roboto-condensed-normal-greek-ext.woff2`: https://fonts.gstatic.com/s/robotocondensed/v31/ieVl2ZhZI2eCN5jzbjEETS9weq8-1967DRs5.woff2
+- `roboto-condensed-normal-greek.woff2`: https://fonts.gstatic.com/s/robotocondensed/v31/ieVl2ZhZI2eCN5jzbjEETS9weq8-19G7DRs5.woff2
+- `roboto-condensed-normal-latin.woff2`: https://fonts.gstatic.com/s/robotocondensed/v31/ieVl2ZhZI2eCN5jzbjEETS9weq8-19K7DQ.woff2
+
+License source: https://raw.githubusercontent.com/google/fonts/main/ofl/robotocondensed/OFL.txt (SIL Open Font License 1.1).
