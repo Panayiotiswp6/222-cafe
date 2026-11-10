@@ -21,14 +21,15 @@ The build produces `dist/`, including a pre-rendered homepage that hydrates into
 ## Included
 
 - A dramatic burgundy and peach campaign design, bold type, two realistic AI-styled coffee visuals and a subtle pointer parallax effect that respects reduced motion.
+- Full-width photographic environments for the café story, coffee, menu, space and visit sections, with text composed over local contrast gradients.
 - Complete English and Greek UI, with a remembered language preference.
 - Four accessible menu tabs with keyboard navigation, individual product photos and verified Wolt delivery prices.
-- Seven venue photographs with cinematic lighting edits, an Original/Cinematic comparison switch, bilingual captions and a modest “Why 222?” section.
+- Seven venue photographs with cinematic lighting edits, a manually controlled background carousel, an Original/Cinematic comparison switch, bilingual captions and a modest “Why 222?” section.
 - Photo gallery with native modal focus handling and arrow-key navigation.
 - Direct Wolt ordering, Instagram, telephone and Google Maps links.
 - Self-hosted fonts, reduced-motion support, social metadata and café structured data.
 
-Content lives in `src/content.ts`; layout in `src/App.tsx`; styling in `src/styles.css`. Images and fonts are in `public/`. The source hosting manifest is `.openai/hosting.json`.
+Content lives in `src/content.ts`; layout in `src/App.tsx`; the base design is in `src/styles.css` and the photographic section compositions are in `src/immersive.css`. Images and fonts are in `public/`. The source hosting manifest is `.openai/hosting.json`.
 
 Venue and image sources are documented in `ASSET-SOURCES.md`, `PHOTO-SOURCES.md` and `MENU-SOURCES.md`; font sources and licenses are in `public/fonts/`. The 15 featured menu items each use the merchant-assigned product photograph and Wolt delivery price researched on 10 November 2026. The price basis, date and deposit treatment are visible beside the menu. Dine-in prices may differ. Products without merchant photos remain available through the full Wolt menu rather than using unrelated dish photos. Venue hours use a call link because third-party sources differ.
 
