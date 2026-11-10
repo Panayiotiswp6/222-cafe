@@ -6,6 +6,9 @@ const WOLT = 'https://wolt.com/en/grc/athens/restaurant/222-espresso-bar';
 const MAP = 'https://www.google.com/maps/dir/?api=1&destination=222+Espresso+Bar+Papagou+140+Zografou+Athens';
 const INSTAGRAM = 'https://www.instagram.com/222espressobar/';
 const sections = ['our-place', 'menu', 'atmosphere', 'visit'];
+// A continuous visit: booths and windows, then terrace, street and entrance.
+const SCENE_ORDER = [0,3,4,1,6,5,2];
+function sceneAtOffset(current:number,offset:number){return SCENE_ORDER[(SCENE_ORDER.indexOf(current)+offset+SCENE_ORDER.length)%SCENE_ORDER.length];}
 
 function Sun({className = ''}: {className?: string}) {
   return <svg viewBox="0 0 100 100" fill="none" className={className} aria-hidden="true"><circle cx="50" cy="50" r="17" stroke="currentColor" strokeWidth="1.5"/>{Array.from({length:16},(_,i)=><path key={i} d="M50 8V24" stroke="currentColor" strokeWidth="1.5" transform={`rotate(${i*22.5} 50 50)`}/>)}<path d="M42 51c5 7 11 7 16 0" stroke="currentColor" strokeWidth="1.5"/><circle cx="44" cy="44" r="1.5" fill="currentColor"/><circle cx="56" cy="44" r="1.5" fill="currentColor"/></svg>;
@@ -33,7 +36,6 @@ export default function App() {
   const [pageVisible,setPageVisible] = useState(true);
   const [sceneFocused,setSceneFocused] = useState(false);
   const [controlsHovered,setControlsHovered] = useState(false);
-  const storyScene = useRef<HTMLElement>(null);
   const spaceScene = useRef<HTMLElement>(null);
   const sceneRefs = useRef<(HTMLButtonElement|null)[]>([]);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -42,7 +44,6 @@ export default function App() {
   const t = copy[lang]; const li = lang === 'en' ? 0 : 1;
   const venueSwitchProps={cinematic:cinematicVenue,onChange:setCinematicVenue,label:t.venueToggleLabel,cinematicLabel:t.venueCinematic,originalLabel:t.venueOriginal};
   const playbackProps={playing:autoplay,onToggle:togglePlayback,pauseLabel:t.pausePhotos,playLabel:t.playPhotos};
-  const storySceneIndex=(activeScene+4)%venuePhotos.length;
   function venueSrc(index:number){const image=venuePhotos[index].image;return cinematicVenue?`/images/venue-styled/${image.replace(/\.jpg$/,'.webp')}`:`/images/${image}`;}
   function venueAlt(index:number){return `${venuePhotos[index].alt[li]}${cinematicVenue?` — ${t.venueEditedAlt}`:''}`;}
   useEffect(()=>{try{if(localStorage.getItem('222-language')==='el')setLang('el');}catch{/* Storage may be disabled. */}},[]);
@@ -53,12 +54,12 @@ export default function App() {
     if(!('IntersectionObserver' in window)){setScenesVisible(true);return;}
     const visible=new Map<Element,boolean>();let cancelled=false;
     const observer=new IntersectionObserver(entries=>{if(cancelled)return;for(const entry of entries)visible.set(entry.target,entry.isIntersecting&&entry.intersectionRatio>=.18);setScenesVisible([...visible.values()].some(Boolean));},{threshold:[0,.18]});
-    for(const element of [storyScene.current,spaceScene.current])if(element)observer.observe(element);
+    for(const element of [spaceScene.current])if(element)observer.observe(element);
     return()=>{cancelled=true;observer.disconnect();};
   },[]);
   useEffect(()=>{
     if(!autoplay||!scenesVisible||!pageVisible||sceneFocused||controlsHovered||galleryIndex!==null||mobileOpen)return;
-    const timer=window.setInterval(()=>setSceneState(({current})=>({current:(current+1)%venuePhotos.length,previous:current})),7000);
+    const timer=window.setInterval(()=>setSceneState(({current})=>({current:sceneAtOffset(current,1),previous:current})),7000);
     return()=>window.clearInterval(timer);
   },[autoplay,scenesVisible,pageVisible,sceneFocused,controlsHovered,galleryIndex,mobileOpen]);
   useEffect(()=>{const desktop=window.matchMedia('(min-width: 851px)');const closeOnDesktop=()=>{if(desktop.matches)setMobileOpen(false);};desktop.addEventListener('change',closeOnDesktop);return ()=>desktop.removeEventListener('change',closeOnDesktop);},[]);
@@ -67,9 +68,9 @@ export default function App() {
   useEffect(()=>{const close=(e:KeyboardEvent)=>{if(e.key==='Escape')setMobileOpen(false);};window.addEventListener('keydown',close);return ()=>window.removeEventListener('keydown',close);},[]);
   function changeScene(index:number){const next=(index+venuePhotos.length)%venuePhotos.length;setAutoplay(false);setSceneState(old=>old.current===next?old:{current:next,previous:old.current});}
   function togglePlayback(){const next=!autoplay;setAutoplay(next);if(next){setSceneFocused(false);setControlsHovered(false);}}
-  function selectSceneFromKeyboard(e:React.KeyboardEvent<HTMLButtonElement>,index:number){let next=index;if(e.key==='ArrowRight')next=(index+1)%venuePhotos.length;else if(e.key==='ArrowLeft')next=(index+venuePhotos.length-1)%venuePhotos.length;else if(e.key==='Home')next=0;else if(e.key==='End')next=venuePhotos.length-1;else return;e.preventDefault();changeScene(next);sceneRefs.current[next]?.focus();}
+  function selectSceneFromKeyboard(e:React.KeyboardEvent<HTMLButtonElement>,index:number){let position=SCENE_ORDER.indexOf(index);if(e.key==='ArrowRight')position=(position+1)%SCENE_ORDER.length;else if(e.key==='ArrowLeft')position=(position+SCENE_ORDER.length-1)%SCENE_ORDER.length;else if(e.key==='Home')position=0;else if(e.key==='End')position=SCENE_ORDER.length-1;else return;e.preventDefault();changeScene(SCENE_ORDER[position]);sceneRefs.current[position]?.focus();}
   function blurScene(e:React.FocusEvent<HTMLElement>){if(!e.currentTarget.contains(e.relatedTarget as Node|null))setSceneFocused(false);}
-  function moveGallery(step:number){setGalleryIndex(i=>i===null?0:(i+step+venuePhotos.length)%venuePhotos.length);}
+  function moveGallery(step:number){setGalleryIndex(i=>i===null?SCENE_ORDER[0]:sceneAtOffset(i,step));}
   function changeLanguage(next:Lang){setLang(next);try{localStorage.setItem('222-language',next);}catch{/* Storage may be disabled. */}}
   function moveCampaign(e:React.PointerEvent<HTMLElement>){if(e.pointerType!=='mouse'||window.matchMedia('(prefers-reduced-motion: reduce)').matches||window.innerWidth<851)return;const box=e.currentTarget.getBoundingClientRect();if(campaignArt.current)campaignArt.current.style.transform=`translate3d(${((e.clientX-box.left)/box.width-.5)*-12}px,${((e.clientY-box.top)/box.height-.5)*-8}px,0) scale(1.025)`;}
   function selectTabFromKeyboard(e:React.KeyboardEvent<HTMLButtonElement>,i:number){let next=i;if(e.key==='ArrowRight')next=(i+1)%4;else if(e.key==='ArrowLeft')next=(i+3)%4;else if(e.key==='Home')next=0;else if(e.key==='End')next=3;else return;e.preventDefault();setTab(next);tabRefs.current[next]?.focus();}
@@ -93,18 +94,18 @@ export default function App() {
         <div className="section-wrap campaign-bottom"><a href="#visit"><MapPin size={12}/>{t.heroFoot}</a><span>{t.campaignLabel}</span><a href="#our-place">{t.heroScroll}<ArrowDown size={15}/></a></div>
       </section>
       <div className="ticker" aria-label={t.ticker.join(' · ')}><div className="ticker-track" aria-hidden="true">{[0,1].map(n=><div className="ticker-group" key={n}>{t.ticker.map(s=><span key={s}>{s}<span className="ticker-star">✳</span></span>)}</div>)}</div></div>
-      <section ref={storyScene} className="ambient-scene ambient-story" id="our-place" aria-labelledby="story-title" onFocusCapture={()=>setSceneFocused(true)} onBlurCapture={blurScene}>
-        <VenueBackdrops active={storySceneIndex} previous={previousScene===null?null:(previousScene+4)%venuePhotos.length} source={venueSrc} describe={venueAlt} className="story-scene-image"/>
+      <section className="ambient-scene ambient-story" id="our-place" aria-labelledby="story-title">
+        <img className="ambient-background story-scene-image" src={venueSrc(4)} alt={venueAlt(4)} width="1600" height="752" loading="lazy"/>
         <div className="ambient-shade"/>
         <div className="section-wrap ambient-story-content">
           <p className="eyebrow">{t.storyEyebrow}</p>
           <h2 id="story-title">{t.storyTitle}</h2>
           <p className="ambient-lead">{t.storyBody}</p>
           <p className="ambient-script">{t.storyNote}</p>
-          <div className="ambient-actions"><a className="button" href="#atmosphere">{t.storyCta}<ArrowUpRight size={19}/></a><button className="ambient-link story-gallery-open" onClick={()=>setGalleryIndex(storySceneIndex)}>{t.photoHint}<Plus size={19}/></button></div>
+          <div className="ambient-actions"><a className="button" href="#atmosphere">{t.storyCta}<ArrowUpRight size={19}/></a><button className="ambient-link story-gallery-open" onClick={()=>setGalleryIndex(4)}>{t.photoHint}<Plus size={19}/></button></div>
         </div>
         <ol className="section-wrap ambient-reasons">{t.reasons.map((reason,i)=><li key={i}><span className="reason-index">0{i+1}</span><h3>{reason.title}</h3><p>{reason.body}</p></li>)}</ol>
-        <div className="section-wrap ambient-scene-foot"><span>222 / {t.location}</span><div className="ambient-auto-controls" onPointerEnter={()=>setControlsHovered(true)} onPointerLeave={()=>setControlsHovered(false)}><span>{autoplay?t.autoplayHint:t.playbackPausedHint}</span><PlaybackButton {...playbackProps}/></div></div>
+        <div className="section-wrap ambient-scene-foot"><span>222 / {t.location}</span><span>{t.storyPhotoCaption}</span></div>
       </section>
       <section className="ambient-scene ambient-coffee" aria-labelledby="interlude-title">
         <img className="ambient-background" src="/images/campaign-detail.webp" alt={t.interludeAlt} width="1254" height="1254" loading="lazy"/>
@@ -124,8 +125,8 @@ export default function App() {
         <div className="section-wrap ambient-space-top"><p className="eyebrow">{t.spaceEyebrow}</p><VenueTreatmentSwitch {...venueSwitchProps}/></div>
         <div className="section-wrap ambient-space-content"><p className="ambient-location" aria-live={autoplay?'off':'polite'}>{venuePhotos[activeScene].caption[li]}</p><h2 id="space-title">{t.spaceTitle.split('\n').map((line,i)=><span key={i}>{line}</span>)}</h2><p className="ambient-lead">{t.spaceBody}</p><button className="ambient-link space-gallery-open" onClick={()=>setGalleryIndex(activeScene)}>{t.photoHint}<Plus size={20}/></button></div>
         <div className="section-wrap ambient-space-bottom">
-          <div className="space-scene-controls" onPointerEnter={()=>setControlsHovered(true)} onPointerLeave={()=>setControlsHovered(false)}><button className="icon-button" onClick={()=>changeScene(activeScene-1)} aria-label={t.galleryPrev}><ChevronLeft/></button><span>{String(activeScene+1).padStart(2,'0')} / {String(venuePhotos.length).padStart(2,'0')}</span><button className="icon-button" onClick={()=>changeScene(activeScene+1)} aria-label={t.galleryNext}><ChevronRight/></button><PlaybackButton {...playbackProps}/></div>
-          <div className="space-scene-selectors" onPointerEnter={()=>setControlsHovered(true)} onPointerLeave={()=>setControlsHovered(false)} role="group" aria-label={t.sceneNavLabel}>{venuePhotos.map((photo,index)=><button key={photo.image} ref={node=>{sceneRefs.current[index]=node;}} aria-label={`${index+1}. ${photo.caption[li]}`} aria-pressed={activeScene===index} onClick={()=>changeScene(index)} onKeyDown={e=>selectSceneFromKeyboard(e,index)}><span>{String(index+1).padStart(2,'0')}</span><span>{photo.caption[li]}</span></button>)}</div>
+          <div className="space-scene-controls" onPointerEnter={()=>setControlsHovered(true)} onPointerLeave={()=>setControlsHovered(false)}><button className="icon-button" onClick={()=>changeScene(sceneAtOffset(activeScene,-1))} aria-label={t.galleryPrev}><ChevronLeft/></button><span>{String(SCENE_ORDER.indexOf(activeScene)+1).padStart(2,'0')} / {String(venuePhotos.length).padStart(2,'0')}</span><button className="icon-button" onClick={()=>changeScene(sceneAtOffset(activeScene,1))} aria-label={t.galleryNext}><ChevronRight/></button><PlaybackButton {...playbackProps}/></div>
+          <div className="space-scene-selectors" onPointerEnter={()=>setControlsHovered(true)} onPointerLeave={()=>setControlsHovered(false)} role="group" aria-label={t.sceneNavLabel}>{SCENE_ORDER.map((index,position)=>{const photo=venuePhotos[index];return <button key={photo.image} ref={node=>{sceneRefs.current[position]=node;}} aria-label={`${position+1}. ${photo.caption[li]}`} aria-pressed={activeScene===index} onClick={()=>changeScene(index)} onKeyDown={e=>selectSceneFromKeyboard(e,index)}><span>{String(position+1).padStart(2,'0')}</span><span>{photo.caption[li]}</span></button>;})}</div>
           <p className="ambient-treatment-note">{t.venueTreatmentNote}</p>
         </div>
       </section>
@@ -136,6 +137,6 @@ export default function App() {
       </section>
     </main>
     <footer className="footer"><div className="section-wrap"><div className="footer-top"><h2>{t.footerBig}</h2><a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="footer-social"><span>{t.follow}<strong>@222espressobar</strong></span><span className="round-link"><Instagram size={22}/></span></a></div><div className="footer-main"><Logo footer/><div><p>{t.footerLine}</p><div className="footer-links"><a href={WOLT} target="_blank" rel="noopener noreferrer">Wolt<ArrowUpRight size={13}/></a><a href={MAP} target="_blank" rel="noopener noreferrer">Google Maps<ArrowUpRight size={13}/></a><a href="tel:+302107799931">210 779 9931<ArrowUpRight size={13}/></a></div></div><a className="back-top" href="#top">{t.backTop}<ArrowUp size={17}/></a></div><div className="footer-bottom"><span>© {new Date().getFullYear()} 222 Espresso Bar</span><span>{t.photoCredit}</span><span>MADE FOR THE EVERYDAY.</span></div></div></footer>
-    <dialog ref={dialog} className="gallery-dialog" onClose={()=>setGalleryIndex(null)} onClick={e=>{if(e.target===e.currentTarget)dialog.current?.close();}} onKeyDown={e=>{if(e.key==='ArrowRight'){e.preventDefault();moveGallery(1);}if(e.key==='ArrowLeft'){e.preventDefault();moveGallery(-1);}}} aria-labelledby="gallery-title"><div className="gallery-top"><p id="gallery-title">222 / {t.galleryTitle}</p><VenueTreatmentSwitch {...venueSwitchProps}/><button className="icon-button gallery-close" onClick={()=>dialog.current?.close()} aria-label={t.galleryClose} autoFocus><X size={25}/></button></div><div className="gallery-image"><img src={venueSrc(galleryIndex??0)} alt={venueAlt(galleryIndex??0)}/></div><p className="gallery-caption">{venuePhotos[galleryIndex??0].caption[li]}</p><div className="gallery-controls"><button className="icon-button" onClick={()=>moveGallery(-1)} aria-label={t.galleryPrev}><ChevronLeft/></button><span>{String((galleryIndex??0)+1).padStart(2,'0')} / {String(venuePhotos.length).padStart(2,'0')}</span><button className="icon-button" onClick={()=>moveGallery(1)} aria-label={t.galleryNext}><ChevronRight/></button></div></dialog>
+    <dialog ref={dialog} className="gallery-dialog" onClose={()=>setGalleryIndex(null)} onClick={e=>{if(e.target===e.currentTarget)dialog.current?.close();}} onKeyDown={e=>{if(e.key==='ArrowRight'){e.preventDefault();moveGallery(1);}if(e.key==='ArrowLeft'){e.preventDefault();moveGallery(-1);}}} aria-labelledby="gallery-title"><div className="gallery-top"><p id="gallery-title">222 / {t.galleryTitle}</p><VenueTreatmentSwitch {...venueSwitchProps}/><button className="icon-button gallery-close" onClick={()=>dialog.current?.close()} aria-label={t.galleryClose} autoFocus><X size={25}/></button></div><div className="gallery-image"><img src={venueSrc(galleryIndex??0)} alt={venueAlt(galleryIndex??0)}/></div><p className="gallery-caption">{venuePhotos[galleryIndex??0].caption[li]}</p><div className="gallery-controls"><button className="icon-button" onClick={()=>moveGallery(-1)} aria-label={t.galleryPrev}><ChevronLeft/></button><span>{String(SCENE_ORDER.indexOf(galleryIndex??0)+1).padStart(2,'0')} / {String(venuePhotos.length).padStart(2,'0')}</span><button className="icon-button" onClick={()=>moveGallery(1)} aria-label={t.galleryNext}><ChevronRight/></button></div></dialog>
   </>;
 }

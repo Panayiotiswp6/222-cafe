@@ -7,9 +7,6 @@
 }
 .ambient-background.venue-backdrop.is-previous { opacity: 1; z-index: -4; }
 .ambient-background.venue-backdrop.is-current { opacity: 1; z-index: -3; }
-.ambient-auto-controls { display:flex; align-items:center; justify-content:flex-end; gap:18px; flex-wrap:wrap; }
-.ambient-auto-controls>span { color:#f0d4c0; font-size:9px; line-height:1.7; max-width:210px; }
-.ambient-scene-foot { flex-wrap:wrap; gap:15px 25px; }
 .scene-playback,
 .space-scene-controls .scene-playback {
   display:inline-flex;
@@ -35,9 +32,6 @@
 .space-scene-controls { flex-wrap:wrap; }
 .space-scene-controls .scene-playback { margin-left:9px; }
 @media(max-width:620px) {
-  .ambient-scene-foot { padding-block:19px; }
-  .ambient-auto-controls { width:100%; justify-content:space-between; gap:12px; }
-  .ambient-auto-controls>span { font-size:8px; max-width:145px; }
   .scene-playback { padding:10px 13px; font-size:9px; }
   .space-scene-controls .scene-playback { font-size:9px; padding-inline:13px; }
 }
