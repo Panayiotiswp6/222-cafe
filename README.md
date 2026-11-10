@@ -24,12 +24,14 @@ The build produces `dist/`, including a pre-rendered homepage that hydrates into
 - Full-width photographic environments for the café story, coffee, menu, space and visit sections, with text composed over local contrast gradients.
 - Complete English and Greek UI, with a remembered language preference.
 - Four accessible menu tabs with keyboard navigation, individual product photos and verified Wolt delivery prices.
-- Seven venue photographs with cinematic lighting edits, a manually controlled background carousel, an Original/Cinematic comparison switch, bilingual captions and a modest “Why 222?” section.
+- Seven venue photographs with cinematic lighting edits, gentle automatic background changes in the story and space sections, an Original/Cinematic comparison switch, bilingual captions and a modest “Why 222?” section.
 - Photo gallery with native modal focus handling and arrow-key navigation.
 - Direct Wolt ordering, Instagram, telephone and Google Maps links.
 - Self-hosted fonts, reduced-motion support, social metadata and café structured data.
 
-Content lives in `src/content.ts`; layout in `src/App.tsx`; the base design is in `src/styles.css` and the photographic section compositions are in `src/immersive.css`. Images and fonts are in `public/`. The source hosting manifest is `.openai/hosting.json`.
+Content lives in `src/content.ts`; layout in `src/App.tsx`; the base design is in `src/styles.css`, the photographic section compositions are in `src/immersive.css`, and background dissolves/playback controls are in `src/slideshow.css`. Images and fonts are in `public/`. The source hosting manifest is `.openai/hosting.json`.
+
+Venue backgrounds advance every seven seconds with a 1.4-second dissolve, only while a photo section is visible. Playback pauses when the page is hidden, the gallery/navigation is open, or the visitor focuses or hovers over controls. Explicit pause/play controls are available, manual scene selection pauses rotation, and reduced-motion preferences disable automatic playback by default. Background shading is localized around copy so the café stays clearly visible.
 
 Venue and image sources are documented in `ASSET-SOURCES.md`, `PHOTO-SOURCES.md` and `MENU-SOURCES.md`; font sources and licenses are in `public/fonts/`. The 15 featured menu items each use the merchant-assigned product photograph and Wolt delivery price researched on 10 November 2026. The price basis, date and deposit treatment are visible beside the menu. Dine-in prices may differ. Products without merchant photos remain available through the full Wolt menu rather than using unrelated dish photos. Venue hours use a call link because third-party sources differ.
 

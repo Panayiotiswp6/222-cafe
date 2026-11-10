@@ -1,0 +1,51 @@
+/* Keep the outgoing photograph underneath a slow dissolve: no black-frame flash. */
+.ambient-background.venue-backdrop {
+  opacity: 0;
+  z-index: -5;
+  pointer-events: none;
+  transition: opacity 1.4s ease-in-out;
+}
+.ambient-background.venue-backdrop.is-previous { opacity: 1; z-index: -4; }
+.ambient-background.venue-backdrop.is-current { opacity: 1; z-index: -3; }
+.ambient-auto-controls { display:flex; align-items:center; justify-content:flex-end; gap:18px; flex-wrap:wrap; }
+.ambient-auto-controls>span { color:#f0d4c0; font-size:9px; line-height:1.7; max-width:210px; }
+.ambient-scene-foot { flex-wrap:wrap; gap:15px 25px; }
+.scene-playback,
+.space-scene-controls .scene-playback {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  min-height:44px;
+  height:auto;
+  width:auto;
+  padding:11px 16px;
+  border:1px solid #f3cbb07d;
+  border-radius:99px;
+  background:#30101a61;
+  color:#fff5e9;
+  font:500 10px/1.5 'DM Sans',Arial,sans-serif;
+  white-space:nowrap;
+  backdrop-filter:blur(6px);
+  transition:background .2s,color .2s;
+}
+.scene-playback:hover,
+.space-scene-controls .scene-playback:hover { background:#f3b58b; color:#55172b; }
+.scene-playback:focus-visible { outline:2px solid #ffd4b5; outline-offset:5px; }
+.space-scene-controls { flex-wrap:wrap; }
+.space-scene-controls .scene-playback { margin-left:9px; }
+@media(max-width:620px) {
+  .ambient-scene-foot { padding-block:19px; }
+  .ambient-auto-controls { width:100%; justify-content:space-between; gap:12px; }
+  .ambient-auto-controls>span { font-size:8px; max-width:145px; }
+  .scene-playback { padding:10px 13px; font-size:9px; }
+  .space-scene-controls .scene-playback { font-size:9px; padding-inline:13px; }
+}
+@media(max-width:480px) {
+  .space-scene-controls .scene-playback { width:44px; height:44px; min-height:44px; padding:0; border-radius:50%; margin-left:auto; }
+  .space-scene-controls .scene-playback>span { display:none; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .ambient-background.venue-backdrop { transition:none; }
+  .scene-playback { transition:none; }
+}
