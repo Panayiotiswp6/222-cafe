@@ -4,6 +4,7 @@ import App from './App';
 import './styles.css';
 import './immersive.css';
 import './slideshow.css';
+import './enhancements.css';
 
 const root = document.getElementById('root')!;
 const app = <React.StrictMode><App /></React.StrictMode>;

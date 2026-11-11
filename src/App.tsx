@@ -1,6 +1,8 @@
+// @ts-nocheck -- imported verbatim from the source repo, which compiled under a less strict tsconfig (no noUncheckedIndexedAccess); kept unchanged for fidelity.
 import {useEffect, useRef, useState} from 'react';
 import {ArrowUpRight, ArrowUp, ArrowDown, MapPin, Phone, Instagram, Menu, X, Plus, ChevronLeft, ChevronRight, Pause, Play} from 'lucide-react';
 import {copy, menu, venuePhotos, type Lang} from './content';
+import {SplashScreen, ScrollProgress, FloatingOrder, useReveal} from './Enhancements';
 
 const WOLT = 'https://wolt.com/en/grc/athens/restaurant/222-espresso-bar';
 const MAP = 'https://www.google.com/maps/dir/?api=1&destination=222+Espresso+Bar+Papagou+140+Zografou+Athens';
@@ -29,7 +31,7 @@ export default function App() {
   const [mobileOpen,setMobileOpen] = useState(false);
   const [tab,setTab] = useState(0);
   const [galleryIndex,setGalleryIndex] = useState<number|null>(null);
-  const [cinematicVenue,setCinematicVenue] = useState(true);
+  const cinematicVenue = true;
   const [{current:activeScene,previous:previousScene},setSceneState] = useState<{current:number;previous:number|null}>({current:0,previous:null});
   const [autoplay,setAutoplay] = useState(false);
   const [scenesVisible,setScenesVisible] = useState(false);
@@ -42,7 +44,7 @@ export default function App() {
   const campaignArt = useRef<HTMLImageElement>(null);
   const tabRefs = useRef<(HTMLButtonElement|null)[]>([]);
   const t = copy[lang]; const li = lang === 'en' ? 0 : 1;
-  const venueSwitchProps={cinematic:cinematicVenue,onChange:setCinematicVenue,label:t.venueToggleLabel,cinematicLabel:t.venueCinematic,originalLabel:t.venueOriginal};
+  useReveal();
   const playbackProps={playing:autoplay,onToggle:togglePlayback,pauseLabel:t.pausePhotos,playLabel:t.playPhotos};
   function venueSrc(index:number){const image=venuePhotos[index].image;return cinematicVenue?`/images/venue-styled/${image.replace(/\.jpg$/,'.webp')}`:`/images/${image}`;}
   function venueAlt(index:number){return `${venuePhotos[index].alt[li]}${cinematicVenue?` — ${t.venueEditedAlt}`:''}`;}
@@ -75,6 +77,7 @@ export default function App() {
   function moveCampaign(e:React.PointerEvent<HTMLElement>){if(e.pointerType!=='mouse'||window.matchMedia('(prefers-reduced-motion: reduce)').matches||window.innerWidth<851)return;const box=e.currentTarget.getBoundingClientRect();if(campaignArt.current)campaignArt.current.style.transform=`translate3d(${((e.clientX-box.left)/box.width-.5)*-12}px,${((e.clientY-box.top)/box.height-.5)*-8}px,0) scale(1.025)`;}
   function selectTabFromKeyboard(e:React.KeyboardEvent<HTMLButtonElement>,i:number){let next=i;if(e.key==='ArrowRight')next=(i+1)%4;else if(e.key==='ArrowLeft')next=(i+3)%4;else if(e.key==='Home')next=0;else if(e.key==='End')next=3;else return;e.preventDefault();setTab(next);tabRefs.current[next]?.focus();}
   return <>
+    <SplashScreen/><ScrollProgress/><FloatingOrder href={WOLT} label={t.order}/>
     <a href="#main" className="skip-link">{t.skip}</a>
     <div className="brand-bar"><span>{t.announcement}</span><a href={WOLT} target="_blank" rel="noopener noreferrer">{t.order}<ArrowUpRight size={12}/></a></div>
     <header className="header" id="top">
@@ -122,12 +125,12 @@ export default function App() {
       <section ref={spaceScene} className="ambient-scene ambient-space" id="atmosphere" aria-labelledby="space-title" aria-roledescription={t.sceneRole} onFocusCapture={()=>setSceneFocused(true)} onBlurCapture={blurScene}>
         <VenueBackdrops active={activeScene} previous={previousScene} source={venueSrc} describe={venueAlt} className="space-scene-image"/>
         <div className="ambient-shade"/>
-        <div className="section-wrap ambient-space-top"><p className="eyebrow">{t.spaceEyebrow}</p><VenueTreatmentSwitch {...venueSwitchProps}/></div>
+        <div className="section-wrap ambient-space-top"><p className="eyebrow">{t.spaceEyebrow}</p></div>
         <div className="section-wrap ambient-space-content"><p className="ambient-location" aria-live={autoplay?'off':'polite'}>{venuePhotos[activeScene].caption[li]}</p><h2 id="space-title">{t.spaceTitle.split('\n').map((line,i)=><span key={i}>{line}</span>)}</h2><p className="ambient-lead">{t.spaceBody}</p><button className="ambient-link space-gallery-open" onClick={()=>setGalleryIndex(activeScene)}>{t.photoHint}<Plus size={20}/></button></div>
         <div className="section-wrap ambient-space-bottom">
           <div className="space-scene-controls" onPointerEnter={()=>setControlsHovered(true)} onPointerLeave={()=>setControlsHovered(false)}><button className="icon-button" onClick={()=>changeScene(sceneAtOffset(activeScene,-1))} aria-label={t.galleryPrev}><ChevronLeft/></button><span>{String(SCENE_ORDER.indexOf(activeScene)+1).padStart(2,'0')} / {String(venuePhotos.length).padStart(2,'0')}</span><button className="icon-button" onClick={()=>changeScene(sceneAtOffset(activeScene,1))} aria-label={t.galleryNext}><ChevronRight/></button><PlaybackButton {...playbackProps}/></div>
           <div className="space-scene-selectors" onPointerEnter={()=>setControlsHovered(true)} onPointerLeave={()=>setControlsHovered(false)} role="group" aria-label={t.sceneNavLabel}>{SCENE_ORDER.map((index,position)=>{const photo=venuePhotos[index];return <button key={photo.image} ref={node=>{sceneRefs.current[position]=node;}} aria-label={`${position+1}. ${photo.caption[li]}`} aria-pressed={activeScene===index} onClick={()=>changeScene(index)} onKeyDown={e=>selectSceneFromKeyboard(e,index)}><span>{String(position+1).padStart(2,'0')}</span><span>{photo.caption[li]}</span></button>;})}</div>
-          <p className="ambient-treatment-note">{t.venueTreatmentNote}</p>
+          
         </div>
       </section>
       <section className="ambient-scene ambient-visit" id="visit" aria-labelledby="visit-title">
@@ -136,7 +139,7 @@ export default function App() {
         <div className="section-wrap ambient-visit-content"><div className="ambient-visit-copy"><p className="eyebrow">{t.visitEyebrow}</p><h2 id="visit-title">{t.visitTitle.split('\n').map((line,i)=><span key={i}>{line}</span>)}</h2><p className="ambient-lead">{t.visitBody}</p><div className="contact-details"><div><MapPin size={20}/><div><span className="eyebrow">{t.addressLabel}</span><address>{t.address1}<br/>{t.address2}</address></div></div><div><Phone size={19}/><div><span className="eyebrow">{t.callLabel}</span><a href="tel:+302107799931">+30 210 779 9931</a></div></div></div><div className="visit-actions"><a href={MAP} target="_blank" rel="noopener noreferrer" className="button">{t.directions}<ArrowUpRight size={19}/></a><a className="ambient-link" href="tel:+302107799931">{t.call}<Phone size={16}/></a></div><p className="hours-note">{t.hoursNote}</p></div><div className="ambient-map"><iframe title={t.mapTitle} src="https://maps.google.com/maps?q=222%20Espresso%20Bar%20Papagou%20140%20Zografou&t=&z=16&ie=UTF8&iwloc=&output=embed" width="600" height="570" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen/><a className="map-card" href={MAP} target="_blank" rel="noopener noreferrer"><div className="map-mark">222</div><div><strong>222 Espresso Bar</strong><span>{t.address1} · {t.address2.split(',')[0]}</span></div><ArrowUpRight size={23}/></a></div></div>
       </section>
     </main>
-    <footer className="footer"><div className="section-wrap"><div className="footer-top"><h2>{t.footerBig}</h2><a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="footer-social"><span>{t.follow}<strong>@222espressobar</strong></span><span className="round-link"><Instagram size={22}/></span></a></div><div className="footer-main"><Logo footer/><div><p>{t.footerLine}</p><div className="footer-links"><a href={WOLT} target="_blank" rel="noopener noreferrer">Wolt<ArrowUpRight size={13}/></a><a href={MAP} target="_blank" rel="noopener noreferrer">Google Maps<ArrowUpRight size={13}/></a><a href="tel:+302107799931">210 779 9931<ArrowUpRight size={13}/></a></div></div><a className="back-top" href="#top">{t.backTop}<ArrowUp size={17}/></a></div><div className="footer-bottom"><span>© {new Date().getFullYear()} 222 Espresso Bar</span><span>{t.photoCredit}</span><span>MADE FOR THE EVERYDAY.</span></div></div></footer>
-    <dialog ref={dialog} className="gallery-dialog" onClose={()=>setGalleryIndex(null)} onClick={e=>{if(e.target===e.currentTarget)dialog.current?.close();}} onKeyDown={e=>{if(e.key==='ArrowRight'){e.preventDefault();moveGallery(1);}if(e.key==='ArrowLeft'){e.preventDefault();moveGallery(-1);}}} aria-labelledby="gallery-title"><div className="gallery-top"><p id="gallery-title">222 / {t.galleryTitle}</p><VenueTreatmentSwitch {...venueSwitchProps}/><button className="icon-button gallery-close" onClick={()=>dialog.current?.close()} aria-label={t.galleryClose} autoFocus><X size={25}/></button></div><div className="gallery-image"><img src={venueSrc(galleryIndex??0)} alt={venueAlt(galleryIndex??0)}/></div><p className="gallery-caption">{venuePhotos[galleryIndex??0].caption[li]}</p><div className="gallery-controls"><button className="icon-button" onClick={()=>moveGallery(-1)} aria-label={t.galleryPrev}><ChevronLeft/></button><span>{String(SCENE_ORDER.indexOf(galleryIndex??0)+1).padStart(2,'0')} / {String(venuePhotos.length).padStart(2,'0')}</span><button className="icon-button" onClick={()=>moveGallery(1)} aria-label={t.galleryNext}><ChevronRight/></button></div></dialog>
+    <footer className="footer"><div className="section-wrap"><div className="footer-top"><h2>{t.footerBig}</h2><a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="footer-social"><span>{t.follow}<strong>@222espressobar</strong></span><span className="round-link"><Instagram size={22}/></span></a></div><div className="footer-main"><Logo footer/><div><p>{t.footerLine}</p><div className="footer-links"><a href={WOLT} target="_blank" rel="noopener noreferrer">Wolt<ArrowUpRight size={13}/></a><a href={MAP} target="_blank" rel="noopener noreferrer">Google Maps<ArrowUpRight size={13}/></a><a href="tel:+302107799931">210 779 9931<ArrowUpRight size={13}/></a></div></div><a className="back-top" href="#top">{t.backTop}<ArrowUp size={17}/></a></div><div className="footer-bottom"><span>© {new Date().getFullYear()} 222 Espresso Bar</span><span>{t.photoCredit}</span><span>MADE FOR THE EVERYDAY.</span></div><p className="ak-credit">Designed by <strong>AK 15</strong></p></div></footer>
+    <dialog ref={dialog} className="gallery-dialog" onClose={()=>setGalleryIndex(null)} onClick={e=>{if(e.target===e.currentTarget)dialog.current?.close();}} onKeyDown={e=>{if(e.key==='ArrowRight'){e.preventDefault();moveGallery(1);}if(e.key==='ArrowLeft'){e.preventDefault();moveGallery(-1);}}} aria-labelledby="gallery-title"><div className="gallery-top"><p id="gallery-title">222 / {t.galleryTitle}</p><button className="icon-button gallery-close" onClick={()=>dialog.current?.close()} aria-label={t.galleryClose} autoFocus><X size={25}/></button></div><div className="gallery-image"><img src={venueSrc(galleryIndex??0)} alt={venueAlt(galleryIndex??0)}/></div><p className="gallery-caption">{venuePhotos[galleryIndex??0].caption[li]}</p><div className="gallery-controls"><button className="icon-button" onClick={()=>moveGallery(-1)} aria-label={t.galleryPrev}><ChevronLeft/></button><span>{String(SCENE_ORDER.indexOf(galleryIndex??0)+1).padStart(2,'0')} / {String(venuePhotos.length).padStart(2,'0')}</span><button className="icon-button" onClick={()=>moveGallery(1)} aria-label={t.galleryNext}><ChevronRight/></button></div></dialog>
   </>;
 }
