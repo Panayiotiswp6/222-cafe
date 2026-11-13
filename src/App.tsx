@@ -2,6 +2,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {ArrowUpRight, ArrowUp, ArrowDown, MapPin, Phone, Instagram, Menu, X, Plus, ChevronLeft, ChevronRight, Pause, Play} from 'lucide-react';
 import {copy, menu, venuePhotos, type Lang} from './content';
+import {asset} from './assets';
 import {SplashScreen, ScrollProgress, FloatingOrder, useReveal} from './Enhancements';
 
 const WOLT = 'https://wolt.com/en/grc/athens/restaurant/222-espresso-bar';
@@ -47,7 +48,7 @@ export default function App() {
   const t = copy[lang]; const li = lang === 'en' ? 0 : 1;
   useReveal();
   const playbackProps={playing:autoplay,onToggle:togglePlayback,pauseLabel:t.pausePhotos,playLabel:t.playPhotos};
-  function venueSrc(index:number){const image=venuePhotos[index].image;return cinematicVenue?`/images/venue-styled/${image.replace(/\.jpg$/,'.webp')}`:`/images/${image}`;}
+  function venueSrc(index:number){const image=venuePhotos[index].image;return asset(cinematicVenue?`images/venue-styled/${image.replace(/\.jpg$/,'.webp')}`:`images/${image}`);}
   function venueAlt(index:number){return `${venuePhotos[index].alt[li]}${cinematicVenue?` — ${t.venueEditedAlt}`:''}`;}
   useEffect(()=>{try{if(localStorage.getItem('222-language')==='el')setLang('el');}catch{/* Storage may be disabled. */}},[]);
   useEffect(()=>{document.documentElement.lang=lang;},[lang]);
@@ -91,7 +92,7 @@ export default function App() {
     </header>
     <main id="main">
       <section className="campaign-hero" aria-labelledby="hero-title" onPointerMove={moveCampaign} onPointerLeave={()=>{if(campaignArt.current)campaignArt.current.style.transform='translate3d(0,0,0) scale(1.02)';}}>
-        <img ref={campaignArt} className="campaign-art" src="/images/campaign-hero.webp" alt={t.heroArtAlt} width="1672" height="941" fetchPriority="high"/>
+        <img ref={campaignArt} className="campaign-art" src={asset('images/campaign-hero.webp')} alt={t.heroArtAlt} width="1672" height="941" fetchPriority="high"/>
         <div className="campaign-shade"/>
         <div className="section-wrap campaign-content"><p className="eyebrow"><span className="small-star">✳</span>{t.eyebrow}</p><h1 id="hero-title"><span>{t.hero1}</span><span>{t.hero2}</span><em>{t.hero3}</em></h1><p className="campaign-description">{t.heroBody}</p><div className="campaign-actions"><a className="button" href="#menu">{t.explore}<ArrowUpRight size={20}/></a><a className="campaign-visit" href="#visit">{t.directions}<ArrowUpRight size={18}/></a></div></div>
         <div className="campaign-stamp"><Sun/><span>{t.badge1}<br/>{t.badge2}</span></div>
@@ -112,7 +113,7 @@ export default function App() {
         <div className="section-wrap ambient-scene-foot"><span>222 / {t.location}</span><span>{t.storyPhotoCaption}</span></div>
       </section>
       <section className="ambient-scene ambient-coffee" aria-labelledby="interlude-title">
-        <img className="ambient-background" src="/images/campaign-detail.webp" alt={t.interludeAlt} width="1254" height="1254" loading="lazy"/>
+        <img className="ambient-background" src={asset('images/campaign-detail.webp')} alt={t.interludeAlt} width="1254" height="1254" loading="lazy"/>
         <div className="ambient-shade"/>
         <div className="section-wrap ambient-coffee-content"><p className="eyebrow">{t.interludeEyebrow}</p><h2 id="interlude-title">{t.interludeTitle.split('\n').map((line,i)=><span key={i}>{line}</span>)}</h2><p className="ambient-lead">{t.interludeBody}</p><a className="button" href="#menu" onClick={()=>setTab(0)}>{t.interludeCta}<ArrowUpRight size={20}/></a><small>{t.campaignLabel}</small></div>
       </section>
@@ -120,7 +121,7 @@ export default function App() {
         <div className="section-heading"><div><p className="eyebrow">{t.menuEyebrow}</p><h2 id="menu-title">{t.menuTitle.split('\n').map((s,i)=><span key={i}>{s}</span>)}</h2></div><p>{t.menuIntro}</p></div>
         <div className="menu-tabs" role="tablist" aria-label={lang==='en'?'Menu categories':'Κατηγορίες μενού'}>{t.tabs.map((label,i)=><button key={i} ref={el=>{tabRefs.current[i]=el;}} role="tab" id={`menu-tab-${i}`} aria-controls="menu-panel" aria-selected={tab===i} tabIndex={tab===i?0:-1} onClick={()=>setTab(i)} onKeyDown={e=>selectTabFromKeyboard(e,i)}><span className="tab-number">0{i+1}</span>{label}<ArrowUpRight size={18}/></button>)}</div>
         <p className="menu-price-basis">{t.menuPriceBasis}</p>
-        <div id="menu-panel" className={`menu-card-grid ${menu[tab].items.length===3?'menu-three':''}`} role="tabpanel" aria-labelledby={`menu-tab-${tab}`} tabIndex={0}>{menu[tab].items.map(item=><article className="menu-card" key={item.image}><div className="menu-card-image"><img src={`/images/menu/${item.image}`} alt={`${item.name[li]} — 222 Espresso Bar`} width="1200" height="675" loading="lazy"/></div><div className="menu-card-scrim"/><div className="menu-card-copy"><div className="menu-card-heading"><h3>{item.name[li]}</h3><data className="menu-card-price" value={item.price.toFixed(2)}>{new Intl.NumberFormat(lang==='el'?'el-GR':'en-IE',{style:'currency',currency:'EUR'}).format(item.price)}</data></div><p>{item.detail[li]}</p></div></article>)}</div>
+        <div id="menu-panel" className={`menu-card-grid ${menu[tab].items.length===3?'menu-three':''}`} role="tabpanel" aria-labelledby={`menu-tab-${tab}`} tabIndex={0}>{menu[tab].items.map(item=><article className="menu-card" key={item.image}><div className="menu-card-image"><img src={asset(`images/menu/${item.image}`)} alt={`${item.name[li]} — 222 Espresso Bar`} width="1200" height="675" loading="lazy"/></div><div className="menu-card-scrim"/><div className="menu-card-copy"><div className="menu-card-heading"><h3>{item.name[li]}</h3><data className="menu-card-price" value={item.price.toFixed(2)}>{new Intl.NumberFormat(lang==='el'?'el-GR':'en-IE',{style:'currency',currency:'EUR'}).format(item.price)}</data></div><p>{item.detail[li]}</p></div></article>)}</div>
         <div className="menu-bottom"><p>{t.menuNote}</p><div className="delivery-actions"><a className="button" href={WOLT} target="_blank" rel="noopener noreferrer">{t.order}<ArrowUpRight size={20}/></a><a className="button" href={EFOOD} target="_blank" rel="noopener noreferrer">{t.orderEfood}<ArrowUpRight size={20}/></a></div></div>
       </div></section>
       <section ref={spaceScene} className="ambient-scene ambient-space" id="atmosphere" aria-labelledby="space-title" aria-roledescription={t.sceneRole} onFocusCapture={()=>setSceneFocused(true)} onBlurCapture={blurScene}>

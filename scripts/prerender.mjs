@@ -7,7 +7,7 @@ import path from 'node:path';
 
 // Ship complete readable HTML for search engines and visitors before hydration.
 await mkdir('.cache',{recursive:true});
-await build({entryPoints:['src/App.tsx'],outfile:'.cache/prerender.mjs',bundle:true,platform:'node',format:'esm',packages:'external',jsx:'automatic',logLevel:'silent'});
+await build({entryPoints:['src/App.tsx'],outfile:'.cache/prerender.mjs',bundle:true,platform:'node',format:'esm',packages:'external',jsx:'automatic',logLevel:'silent',define:{'import.meta.env.BASE_URL':JSON.stringify(process.env.VITE_BASE_PATH || '/')}});
 const {default:App}=await import(pathToFileURL(path.resolve('.cache/prerender.mjs')));
 const markup=renderToString(createElement(App));
 const html=await readFile('dist/index.html','utf8');
