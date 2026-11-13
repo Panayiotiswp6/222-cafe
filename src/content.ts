@@ -2,7 +2,7 @@ export type Lang = 'en' | 'el';
 export const copy = {
   en: {
     skip: 'Skip to content', nav: ['Our place', 'The menu', 'The atmosphere', 'Find us'],
-    directions: 'Find your way', order: 'Order on Wolt', openMenu: 'Open navigation', closeMenu: 'Close navigation',
+    directions: 'Find your way', order: 'Order on Wolt', orderEfood: 'Order on efood', openMenu: 'Open navigation', closeMenu: 'Close navigation',
     eyebrow: 'YOUR NEIGHBOURHOOD ESPRESSO BAR', location: 'ZOGRAFOU, ATHENS',
     hero1: 'Coffee.', hero2: 'Friends.', hero3: '222.',
     heroBody: 'Your first espresso. A table with friends. The everyday, made a little better. Welcome to your corner of Zografou.',
@@ -36,7 +36,7 @@ export const copy = {
   },
   el: {
     skip: 'Μετάβαση στο περιεχόμενο', nav: ['Το 222', 'Το μενού', 'Ο χώρος', 'Θα μας βρεις'],
-    directions: 'Έλα στο 222', order: 'Παράγγειλε στο Wolt', openMenu: 'Άνοιγμα πλοήγησης', closeMenu: 'Κλείσιμο πλοήγησης',
+    directions: 'Έλα στο 222', order: 'Παράγγειλε στο Wolt', orderEfood: 'Παράγγειλε στο efood', openMenu: 'Άνοιγμα πλοήγησης', closeMenu: 'Κλείσιμο πλοήγησης',
     eyebrow: 'ΤΟ ESPRESSO BAR ΤΗΣ ΓΕΙΤΟΝΙΑΣ ΣΟΥ', location: 'ΖΩΓΡΑΦΟΥ, ΑΘΗΝΑ',
     hero1: 'Καφές.', hero2: 'Παρέα.', hero3: '222.',
     heroBody: 'Ο πρώτος espresso. Ένα τραπέζι με φίλους. Η καθημερινότητα, λίγο πιο όμορφη. Καλώς ήρθες στη δική σου γωνιά στου Ζωγράφου.',

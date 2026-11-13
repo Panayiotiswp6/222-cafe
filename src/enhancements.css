@@ -84,3 +84,8 @@ main{position:relative}
 /* ---------- Designer credit ---------- */
 .ak-credit{text-align:center;padding:4px 0 22px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#805743}
 .ak-credit strong{font-weight:700;color:#5b1a2d;letter-spacing:2.5px}
+
+/* Delivery choices stay together and wrap neatly on small screens. */
+.ambient-menu .menu-bottom{flex-wrap:wrap;gap:24px}
+.delivery-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.delivery-actions .button{white-space:nowrap}

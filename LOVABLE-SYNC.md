@@ -20,3 +20,13 @@ configuration are specific to Lovable and are not imported here.
 
 This is a point-in-time synchronization. Future edits in either service need
 another explicit synchronization; the services do not automatically mirror.
+
+## Subsequent Sites update (2026-11-14)
+
+Removed the former fourth and fifth displayed venue views (terrace and
+neighbourhood) from slideshow backdrops, selectors and modal navigation.
+Five views remain in their existing order. Added direct Wolt and efood order
+buttons below the menu, and efood links in the mobile navigation and footer.
+The efood listing was identified at
+https://www.e-food.gr/delivery/zwgrafou/222-espresso-bar (222 espresso bar,
+Zografou). The existing small Designed by AK 15 credit is retained.

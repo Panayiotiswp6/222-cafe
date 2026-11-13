@@ -446,7 +446,7 @@
   min-height: 44px;
 }
 
-/* All seven venue views become one navigable room-sized backdrop. */
+/* The retained venue views share one navigable room-sized backdrop. */
 .ambient-space {
   min-height: 820px;
   display: flex;
@@ -560,7 +560,7 @@
 
 .space-scene-selectors {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 21px;
 }
 
