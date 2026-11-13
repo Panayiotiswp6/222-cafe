@@ -4,15 +4,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-  # Older Pages settings may still run Jekyll from main. Publish our compiled
-  # website after that run as well, so raw source cannot overwrite the app.
-  workflow_run:
-    workflows: [pages build and deployment]
-    types: [completed]
-    branches: [main]
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -49,6 +44,10 @@ jobs:
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
           path: dist
+      - name: Wait for any older branch-based Pages build
+        run: node scripts/wait-for-legacy-pages.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Deploy website
         id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5

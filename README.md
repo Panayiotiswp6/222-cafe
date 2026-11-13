@@ -31,9 +31,9 @@ directly from the filesystem does not compile React/TypeScript.
 `dist/`, and deploys it whenever `main` changes. In **Settings → Pages**, set
 the build source to **GitHub Actions** to use just this deployment workflow.
 For repositories still using the older branch-based Pages setting, a
-compatibility trigger republishes the compiled website after GitHub's built-in
-"pages build and deployment" workflow finishes, preventing the raw source from
-overwriting the working site.
+compatibility step waits for GitHub's built-in "pages build and deployment"
+workflow for that commit to finish before publishing the compiled website,
+preventing the raw source from overwriting the working site.
 
 The workflow supplies Vite's deployment base path, so JavaScript, photos and
 fonts all load from `/222-cafe/`. Local development and ordinary static hosting
