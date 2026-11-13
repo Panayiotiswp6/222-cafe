@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Older Pages settings may still run Jekyll from main. Publish our compiled
+  # website after that run as well, so raw source cannot overwrite the app.
+  workflow_run:
+    workflows: [pages build and deployment]
+    types: [completed]
+    branches: [main]
 
 permissions:
   contents: read
